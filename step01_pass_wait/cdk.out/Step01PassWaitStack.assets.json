@@ -1,0 +1,19 @@
+{
+  "version": "16.0.0",
+  "files": {
+    "8ac8dbdda13ef1047bfcbb4e72317ea44b6abfcde5b4dca61ac6d587ad80fa8c": {
+      "source": {
+        "path": "Step01PassWaitStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8ac8dbdda13ef1047bfcbb4e72317ea44b6abfcde5b4dca61ac6d587ad80fa8c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

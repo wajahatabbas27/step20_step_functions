@@ -1,0 +1,124 @@
+{
+  "version": "16.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "Step00SimpleStepFunctionStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Step00SimpleStepFunctionStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Step00SimpleStepFunctionStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Step00SimpleStepFunctionStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c9a64a565558deff07e2cead1fccb9ad308b81f21ec57eb3213ca60dd730ef55.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Step00SimpleStepFunctionStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Step00SimpleStepFunctionStack.assets"
+      ],
+      "metadata": {
+        "/Step00SimpleStepFunctionStack/AddData/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddData68E23289"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/addData/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "addDataServiceRole6D9431E8"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/addData/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "addDataServiceRoleDefaultPolicyF07E5C1B"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/addData/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "addData355BAAB2"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/echoStatus/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "echoStatusServiceRole778F5738"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/echoStatus/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "echoStatusE24A8B4E"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/simpleStateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "simpleStateMachineRoleD7E84C5E"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/simpleStateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "simpleStateMachineRoleDefaultPolicyBDD89E15"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/simpleStateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "simpleStateMachine53D92D15"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Step00SimpleStepFunctionStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Step00SimpleStepFunctionStack"
+    }
+  }
+}

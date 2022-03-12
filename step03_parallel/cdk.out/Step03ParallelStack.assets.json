@@ -1,0 +1,19 @@
+{
+  "version": "16.0.0",
+  "files": {
+    "b074677bec64a97fb9b5566d7d900f21d3e526341fcd7ce8a913f6a3dfed9a35": {
+      "source": {
+        "path": "Step03ParallelStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b074677bec64a97fb9b5566d7d900f21d3e526341fcd7ce8a913f6a3dfed9a35.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

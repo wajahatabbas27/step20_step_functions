@@ -1,0 +1,469 @@
+{
+  "Resources": {
+    "DynamoTableB2B22E15": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "Step02ChoicePart1Stack/DynamoTable/Resource"
+      }
+    },
+    "addDataServiceRole6D9431E8": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "Step02ChoicePart1Stack/addData/ServiceRole/Resource"
+      }
+    },
+    "addDataServiceRoleDefaultPolicyF07E5C1B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:*",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DynamoTableB2B22E15",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "addDataServiceRoleDefaultPolicyF07E5C1B",
+        "Roles": [
+          {
+            "Ref": "addDataServiceRole6D9431E8"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "Step02ChoicePart1Stack/addData/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "addData355BAAB2": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "S3Key": "03cdac215bc74deec1f2dadcec05fabaeeb88303bb8a49b3ecb339b6e19c97ef.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "addDataServiceRole6D9431E8",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "DynamoTable": {
+              "Ref": "DynamoTableB2B22E15"
+            }
+          }
+        },
+        "Handler": "addData.handler",
+        "Runtime": "nodejs12.x"
+      },
+      "DependsOn": [
+        "addDataServiceRoleDefaultPolicyF07E5C1B",
+        "addDataServiceRole6D9431E8"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "Step02ChoicePart1Stack/addData/Resource",
+        "aws:asset:path": "asset.03cdac215bc74deec1f2dadcec05fabaeeb88303bb8a49b3ecb339b6e19c97ef",
+        "aws:asset:is-bundled": false,
+        "aws:asset:property": "Code"
+      }
+    },
+    "choiceStateMachineRole9A9D96EA": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "Step02ChoicePart1Stack/choiceStateMachine/Role/Resource"
+      }
+    },
+    "choiceStateMachineRoleDefaultPolicy82618455": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "addData355BAAB2",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "choiceStateMachineRoleDefaultPolicy82618455",
+        "Roles": [
+          {
+            "Ref": "choiceStateMachineRole9A9D96EA"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "Step02ChoicePart1Stack/choiceStateMachine/Role/DefaultPolicy/Resource"
+      }
+    },
+    "choiceStateMachine86BEEEDF": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "choiceStateMachineRole9A9D96EA",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"InvokeAddDataLambda\",\"States\":{\"InvokeAddDataLambda\":{\"Next\":\"operationSuccesful?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              {
+                "Fn::GetAtt": [
+                  "addData355BAAB2",
+                  "Arn"
+                ]
+              },
+              "\",\"Payload.$\":\"$\"}},\"operationSuccesful?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.Payload.operationSuccessful\",\"BooleanEquals\":true,\"Next\":\"We did it\"},{\"Variable\":\"$.Payload.operationSuccessful\",\"BooleanEquals\":false,\"Next\":\"Job Failed\"}]},\"We did it\":{\"Type\":\"Succeed\"},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"could not add data to the dynamoDb\",\"Cause\":\"Lambda Job Failed\"}}}"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "choiceStateMachineRoleDefaultPolicy82618455",
+        "choiceStateMachineRole9A9D96EA"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "Step02ChoicePart1Stack/choiceStateMachine/Resource"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/11Q0WrDMAz8lr072rKOva+BQmGFke09KLbaqnbsUtkdJeTf5zgrjD3dnU6WTn6G+gWeHvBbKm1s5biH8TOitiqXutHcPA7B5OIX9o5Us/eFTMrh0BuEcZO8jhz8bN35pBgHGNuwvCj4ERzr2ywXNilZdShCUeBthqxhnbSluEYhJZHO+9950kUUK/Bedm79Ndh/DTl00prIqA2yU80xsCaVD4m0Q31kX4L81dOkWpKQLrmv7M/mgf2hBL4bmTfBG16O8sEQnOTxWr9Cvcq/dhLm6pJ85IGgXfAHVev/pFEBAAA="
+      },
+      "Metadata": {
+        "aws:cdk:path": "Step02ChoicePart1Stack/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-2"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}

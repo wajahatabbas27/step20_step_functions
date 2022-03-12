@@ -1,0 +1,32 @@
+{
+  "version": "16.0.0",
+  "files": {
+    "2acee7ceb539dd00f1771498d298405493f99c460409bc739961d689aa60ba96": {
+      "source": {
+        "path": "asset.2acee7ceb539dd00f1771498d298405493f99c460409bc739961d689aa60ba96",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2acee7ceb539dd00f1771498d298405493f99c460409bc739961d689aa60ba96.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "c9a64a565558deff07e2cead1fccb9ad308b81f21ec57eb3213ca60dd730ef55": {
+      "source": {
+        "path": "Step00SimpleStepFunctionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c9a64a565558deff07e2cead1fccb9ad308b81f21ec57eb3213ca60dd730ef55.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
